@@ -3,30 +3,26 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SteelSlabManagement.Models
 {
-    [Table("QualityCheck", Schema = "vax")]
+    [Table("QualityChecks", Schema = "vax")]
     public class QualityCheck
     {
         [Key]
-        public int QualityCheckId { get; set; }
+        public int CheckId { get; set; }
 
         [Required]
-        public int ProductionId { get; set; }
-
-        [ForeignKey("ProductionId")]
-        public Production?Production { get; set; }
-
-        [Required]
-        public DateTime CheckDate { get; set; }
+        [ForeignKey("Inventory")]
+        public int BatchId { get; set; }
 
         [Required]
         [MaxLength(50)]
-        public string InspectorName { get; set; } = string.Empty;
+        public string Result { get; set; } = string.Empty;
 
-        [Required]
-        [MaxLength(500)]
-        public string Remarks { get; set; } = String.Empty;
+        [MaxLength(255)]
+        public string? Comments { get; set; }
 
-        [Required]
-        public bool IsApproved { get; set; }
+        [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
+        public DateTime CheckedAt { get; set; }
+
+        public Inventory? Inventory { get; set; }
     }
 }

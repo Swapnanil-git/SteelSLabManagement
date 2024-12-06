@@ -13,20 +13,14 @@ namespace SteelSlabManagement.Models
         public int OrderId { get; set; }
 
         [ForeignKey("OrderId")]
-        public Order ?Order { get; set; }
+        public Order? Order { get; set; }
 
-        [Required]
-        public DateTime ShipmentDate { get; set; }
-
-        [Required]
-        [MaxLength(200)]
-        public string Destination { get; set; } = String.Empty;
-
-        [Required]
         [MaxLength(100)]
-        public string ShippedBy { get; set; } = String.Empty;
+        public string? TrackingId { get; set; }
 
-        [Required]
-        public decimal TotalWeight { get; set; } // In tons
+        [MaxLength(50)]
+        public string Status { get; set; } = "Pending";
+
+        public DateTime? ShippedAt { get; set; }
     }
 }

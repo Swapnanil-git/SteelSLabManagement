@@ -10,17 +10,16 @@ namespace SteelSlabManagement.Models
         public int ProductionId { get; set; }
 
         [Required]
-        public int OrderId { get; set; } 
-        [ForeignKey("OrderId")]
-        public Order? Order { get; set; } 
+        [ForeignKey("Order")]
+        public int OrderId { get; set; }
 
         [Required]
-        public DateTime StartTime { get; set; }
+        [MaxLength(50)]
+        public string Stage { get; set; } = string.Empty;
 
-        [Required]
-        public DateTime EndTime { get; set; }
+        [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
+        public DateTime Timestamp { get; set; }
 
-        [Required]
-        public decimal ProducedWeight { get; set; } // In tons
+        public Order? Order { get; set; }
     }
 }

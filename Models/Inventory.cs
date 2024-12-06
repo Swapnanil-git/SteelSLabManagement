@@ -7,21 +7,19 @@ namespace SteelSlabManagement.Models
     public class Inventory
     {
         [Key]
-        public int InventoryId { get; set; }
+        public int BatchId { get; set; }
 
         [Required]
-        public int ProductionId { get; set; }
-
-        [ForeignKey("ProductionId")]
-        public Production?Production { get; set; } 
+        [MaxLength(50)]
+        public string Grade { get; set; } = string.Empty;
 
         [Required]
-        public int Quantity { get; set; }
+        public double Weight { get; set; } // Weight in kg
 
-        [Required]
-        public DateTime DateAdded { get; set; }
+        [MaxLength(50)]
+        public string Status { get; set; } = "Available";
 
-        [MaxLength(200)]
-        public string Location { get; set; } = String.Empty;
+        [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
+        public DateTime CreatedAt { get; set; }
     }
 }

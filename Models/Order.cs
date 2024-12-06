@@ -10,29 +10,28 @@ namespace SteelSlabManagement.Models
         public int OrderId { get; set; }
 
         [Required]
-        [MaxLength(100)]
-        public string CustomerName { get; set; } = string.Empty;
+        [MaxLength(1)]
+        public string Grade { get; set; } = string.Empty; // Grade: A, B, or C
 
         [Required]
-        public DateTime OrderDate { get; set; }
+        public double Length { get; set; } // Length in meters
+
+        [Required]
+        public double Width { get; set; } // Width in meters
+
+        [Required]
+        public double Thickness { get; set; } // Thickness in meters
 
         [Required]
         public int Quantity { get; set; }
 
         [Required]
-        [MaxLength(1)]
-        public string Grade { get; set; } = string.Empty; // Grade: A, B, or C
+        public double Weight { get; set; } // Calculated weight in kg
 
-        [Required]
-        public decimal Length { get; set; } // Length in meters
+        [MaxLength(50)]
+        public string Status { get; set; } = "Pending";
 
-        [Required]
-        public decimal Width { get; set; } // Width in meters
-
-        [Required]
-        public decimal Thickness { get; set; } // Thickness in meters
+        [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
+        public DateTime CreatedAt { get; set; }
     }
 }
-
-
-
