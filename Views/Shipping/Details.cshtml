@@ -1,0 +1,27 @@
+@model SteelSlabManagement.Models.Shipping
+
+<h2>Shipping Details</h2>
+
+<div class="form-group">
+    <label>Shipping ID:</label>
+    <p>@Model.ShippingId</p>
+</div>
+<div class="form-group">
+    <label>Order ID:</label>
+    <p>@Model.OrderId</p>
+</div>
+<div class="form-group">
+    <label>Tracking ID:</label>
+    <p>@Model.TrackingId</p>
+</div>
+<div class="form-group">
+    <label>Status:</label>
+    <p>@Model.Status</p>
+</div>
+<div class="form-group">
+    <label>Shipped At:</label>
+    <p>@Model.ShippedAt</p>
+</div>
+
+<a asp-action="Edit" asp-route-id="@Model.ShippingId" class="btn btn-primary">Edit</a>
+<a asp-action="Index" class="btn btn-secondary">Back to List</a>

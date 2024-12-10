@@ -1,0 +1,27 @@
+@model SteelSlabManagement.Models.QualityCheck
+
+<h2>Quality Check Details</h2>
+
+<div class="form-group">
+    <label>Check ID:</label>
+    <p>@Model.CheckId</p>
+</div>
+<div class="form-group">
+    <label>Batch ID:</label>
+    <p>@Model.BatchId</p>
+</div>
+<div class="form-group">
+    <label>Result:</label>
+    <p>@Model.Result</p>
+</div>
+<div class="form-group">
+    <label>Comments:</label>
+    <p>@Model.Comments</p>
+</div>
+<div class="form-group">
+    <label>Checked At:</label>
+    <p>@Model.CheckedAt</p>
+</div>
+
+<a asp-action="Edit" asp-route-id="@Model.CheckId" class="btn btn-primary">Edit</a>
+<a asp-action="Index" class="btn btn-secondary">Back to List</a>

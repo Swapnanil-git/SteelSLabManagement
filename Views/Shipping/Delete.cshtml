@@ -1,0 +1,32 @@
+@model SteelSlabManagement.Models.Shipping
+
+<h2>Delete Shipping</h2>
+
+<p>Are you sure you want to delete this shipping record?</p>
+
+<div class="form-group">
+    <label>Shipping ID:</label>
+    <p>@Model.ShippingId</p>
+</div>
+<div class="form-group">
+    <label>Order ID:</label>
+    <p>@Model.OrderId</p>
+</div>
+<div class="form-group">
+    <label>Tracking ID:</label>
+    <p>@Model.TrackingId</p>
+</div>
+<div class="form-group">
+    <label>Status:</label>
+    <p>@Model.Status</p>
+</div>
+<div class="form-group">
+    <label>Shipped At:</label>
+    <p>@Model.ShippedAt</p>
+</div>
+
+<form asp-action="Delete" method="post">
+    <input type="hidden" asp-for="ShippingId" />
+    <button type="submit" class="btn btn-danger">Delete</button>
+    <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+</form>

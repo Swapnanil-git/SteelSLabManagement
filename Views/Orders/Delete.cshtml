@@ -1,0 +1,44 @@
+@model SteelSlabManagement.Models.Order
+
+<h2>Delete Order</h2>
+
+<p>Are you sure you want to delete this order?</p>
+
+<div class="form-group">
+    <label>Order ID:</label>
+    <p>@Model.OrderId</p>
+</div>
+<div class="form-group">
+    <label>Grade:</label>
+    <p>@Model.Grade</p>
+</div>
+<div class="form-group">
+    <label>Length:</label>
+    <p>@Model.Length</p>
+</div>
+<div class="form-group">
+    <label>Width:</label>
+    <p>@Model.Width</p>
+</div>
+<div class="form-group">
+    <label>Thickness:</label>
+    <p>@Model.Thickness</p>
+</div>
+<div class="form-group">
+    <label>Quantity:</label>
+    <p>@Model.Quantity</p>
+</div>
+<div class="form-group">
+    <label>Weight:</label>
+    <p>@Model.Weight</p>
+</div>
+<div class="form-group">
+    <label>Status:</label>
+    <p>@Model.Status</p>
+</div>
+
+<form asp-action="Delete" method="post">
+    <input type="hidden" asp-for="OrderId" />
+    <button type="submit" class="btn btn-danger">Delete</button>
+    <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+</form>

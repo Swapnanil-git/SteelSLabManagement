@@ -1,0 +1,39 @@
+@model SteelSlabManagement.Models.Order
+
+<h2>Edit Order</h2>
+
+<form asp-action="Edit">
+    <input type="hidden" asp-for="OrderId" />
+
+    <div class="form-group">
+        <label asp-for="Grade"></label>
+        <input asp-for="Grade" class="form-control" />
+    </div>
+    <div class="form-group">
+        <label asp-for="Length"></label>
+        <input asp-for="Length" class="form-control" />
+    </div>
+    <div class="form-group">
+        <label asp-for="Width"></label>
+        <input asp-for="Width" class="form-control" />
+    </div>
+    <div class="form-group">
+        <label asp-for="Thickness"></label>
+        <input asp-for="Thickness" class="form-control" />
+    </div>
+    <div class="form-group">
+        <label asp-for="Quantity"></label>
+        <input asp-for="Quantity" class="form-control" />
+    </div>
+    <div class="form-group">
+        <label asp-for="Weight"></label>
+        <input asp-for="Weight" class="form-control" />
+    </div>
+    <div class="form-group">
+        <label asp-for="Status"></label>
+        <input asp-for="Status" class="form-control" />
+    </div>
+
+    <button type="submit" class="btn btn-primary">Save Changes</button>
+    <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+</form>
