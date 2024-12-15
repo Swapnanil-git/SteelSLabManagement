@@ -1,39 +1,29 @@
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using SteelSlabManagement.Data;
+using Newtonsoft.Json;
 using SteelSlabManagement.Models;
+using System;
+using System.Net.Http;
+using System.Text;
 using System.Threading.Tasks;
-using System.Linq;
 
 namespace SteelSlabManagement.Controllers
 {
     public class OrdersController : Controller
     {
-        private readonly AppDbContext _context;
+        private readonly HttpClient _httpClient;
+        private const string LogicAppUrl = "<https://prod-20.centralindia.logic.azure.com:443/workflows/b84efeeb63694c21bc7af471eb25e9f9/triggers/When_a_HTTP_request_is_received/paths/invoke?api-version=2016-10-01&sp=%2Ftriggers%2FWhen_a_HTTP_request_is_received%2Frun&sv=1.0&sig=dSM9yPghwN_tbFQvPoaTz0Pfn-srWLrSA7r3r8ZHKE0>"; // Replace with the Logic App endpoint
 
-        public OrdersController(AppDbContext context)
+        public OrdersController()
         {
-            _context = context;
+            _httpClient = new HttpClient();
         }
 
         // GET: Orders
-        public async Task<IActionResult> Index()
+        public IActionResult Index()
         {
-            var orders = await _context.Orders.ToListAsync();
-            return View(orders);
-        }
-
-        // GET: Orders/Details/5
-        public async Task<IActionResult> Details(int? id)
-        {
-            if (id == null) 
-                return NotFound();
-
-            var order = await _context.Orders.FindAsync(id);
-            if (order == null) 
-                return NotFound();
-
-            return View(order);
+            // Display the existing orders (fetch from a service or static list if needed).
+            // For now, we'll assume this displays dummy data or uses a different service.
+            return View();
         }
 
         // GET: Orders/Create
@@ -49,83 +39,36 @@ namespace SteelSlabManagement.Controllers
         {
             if (ModelState.IsValid)
             {
-                _context.Add(order);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
-            }
-            return View(order);
-        }
-
-        // GET: Orders/Edit/5
-        public async Task<IActionResult> Edit(int? id)
-        {
-            if (id == null) 
-                return NotFound();
-
-            var order = await _context.Orders.FindAsync(id);
-            if (order == null) 
-                return NotFound();
-
-            return View(order);
-        }
-
-        // POST: Orders/Edit/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, Order order)
-        {
-            if (id != order.OrderId) 
-                return NotFound();
-
-            if (ModelState.IsValid)
-            {
                 try
                 {
-                    _context.Update(order);
-                    await _context.SaveChangesAsync();
+                    var jsonContent = JsonConvert.SerializeObject(order);
+                    var content = new StringContent(jsonContent, Encoding.UTF8, "application/json");
+
+                    var response = await _httpClient.PostAsync(LogicAppUrl, content);
+
+                    if (response.IsSuccessStatusCode)
+                    {
+                        return RedirectToAction(nameof(Index));
+                    }
+
+                    // Handle errors from Logic App
+                    ModelState.AddModelError("", $"Failed to create order. Logic App response: {response.StatusCode}");
                 }
-                catch (DbUpdateConcurrencyException)
+                catch (Exception ex)
                 {
-                    if (!OrderExists(order.OrderId)) 
-                        return NotFound();
-                    throw;
+                    ModelState.AddModelError("", $"An error occurred: {ex.Message}");
                 }
-                return RedirectToAction(nameof(Index));
             }
-            return View(order);
-        }
-
-        // GET: Orders/Delete/5
-        public async Task<IActionResult> Delete(int? id)
-        {
-            if (id == null) 
-                return NotFound();
-
-            var order = await _context.Orders.FindAsync(id);
-            if (order == null) 
-                return NotFound();
 
             return View(order);
         }
 
-        // POST: Orders/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
+        // Helper Method: Prepare Logic App Request
+        private async Task<HttpResponseMessage> SendToLogicApp(Order order)
         {
-            var order = await _context.Orders.FindAsync(id);
-            if (order != null)
-            {
-                _context.Orders.Remove(order);
-                await _context.SaveChangesAsync();
-            }
-            return RedirectToAction(nameof(Index));
-        }
-
-        // Helper Method: Check if Order Exists
-        private bool OrderExists(int id)
-        {
-            return _context.Orders.Any(e => e.OrderId == id);
+            var jsonContent = JsonConvert.SerializeObject(order);
+            var content = new StringContent(jsonContent, Encoding.UTF8, "application/json");
+            return await _httpClient.PostAsync(LogicAppUrl, content);
         }
     }
 }
