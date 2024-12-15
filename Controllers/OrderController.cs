@@ -41,6 +41,10 @@ namespace SteelSlabManagement.Controllers
             {
                 try
                 {
+
+                    double density = GetDensityByGrade(order.Grade);
+                    double volume = order.Length * order.Width * order.Thickness; // Assuming dimensions are in cm³
+                    order.Weight = volume * density * order.Quantity;
                     var jsonContent = JsonConvert.SerializeObject(order);
                     var content = new StringContent(jsonContent, Encoding.UTF8, "application/json");
 
@@ -62,6 +66,19 @@ namespace SteelSlabManagement.Controllers
 
             return View(order);
         }
+
+        
+            private double GetDensityByGrade(string grade)
+            {
+                return grade switch
+                {
+                  "A" => 7.75,
+                  "B" => 8.0,
+                  "C" => 7.0,
+                _ => throw new ArgumentException("Invalid grade")
+                };
+            }
+        
 
         // Helper Method: Prepare Logic App Request
         private async Task<HttpResponseMessage> SendToLogicApp(Order order)
