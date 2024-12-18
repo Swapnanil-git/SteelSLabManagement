@@ -1,29 +1,39 @@
 using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json;
+using Microsoft.EntityFrameworkCore;
+using SteelSlabManagement.Data;
 using SteelSlabManagement.Models;
-using System;
-using System.Net.Http;
-using System.Text;
 using System.Threading.Tasks;
+using System.Linq;
 
 namespace SteelSlabManagement.Controllers
 {
     public class OrdersController : Controller
     {
-        private readonly HttpClient _httpClient;
-        private const string LogicAppUrl = "<https://prod-20.centralindia.logic.azure.com:443/workflows/b84efeeb63694c21bc7af471eb25e9f9/triggers/When_a_HTTP_request_is_received/paths/invoke?api-version=2016-10-01&sp=%2Ftriggers%2FWhen_a_HTTP_request_is_received%2Frun&sv=1.0&sig=dSM9yPghwN_tbFQvPoaTz0Pfn-srWLrSA7r3r8ZHKE0>"; // Replace with the Logic App endpoint
+        private readonly AppDbContext _context;
 
-        public OrdersController()
+        public OrdersController(AppDbContext context)
         {
-            _httpClient = new HttpClient();
+            _context = context;
         }
 
         // GET: Orders
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            // Display the existing orders (fetch from a service or static list if needed).
-            // For now, we'll assume this displays dummy data or uses a different service.
-            return View();
+            var orders = await _context.Orders.ToListAsync();
+            return View(orders);
+        }
+
+        // GET: Orders/Details/5
+        public async Task<IActionResult> Details(int? id)
+        {
+            if (id == null) 
+                return NotFound();
+
+            var order = await _context.Orders.FindAsync(id);
+            if (order == null) 
+                return NotFound();
+
+            return View(order);
         }
 
         // GET: Orders/Create
@@ -39,53 +49,83 @@ namespace SteelSlabManagement.Controllers
         {
             if (ModelState.IsValid)
             {
-                try
-                {
-
-                    double density = GetDensityByGrade(order.Grade);
-                    double volume = order.Length * order.Width * order.Thickness; // Assuming dimensions are in cm³
-                    order.Weight = volume * density * order.Quantity;
-                    var jsonContent = JsonConvert.SerializeObject(order);
-                    var content = new StringContent(jsonContent, Encoding.UTF8, "application/json");
-
-                    var response = await _httpClient.PostAsync(LogicAppUrl, content);
-
-                    if (response.IsSuccessStatusCode)
-                    {
-                        return RedirectToAction(nameof(Index));
-                    }
-
-                    // Handle errors from Logic App
-                    ModelState.AddModelError("", $"Failed to create order. Logic App response: {response.StatusCode}");
-                }
-                catch (Exception ex)
-                {
-                    ModelState.AddModelError("", $"An error occurred: {ex.Message}");
-                }
+                _context.Add(order);
+                await _context.SaveChangesAsync();
+                return RedirectToAction(nameof(Index));
             }
+            return View(order);
+        }
+
+        // GET: Orders/Edit/5
+        public async Task<IActionResult> Edit(int? id)
+        {
+            if (id == null) 
+                return NotFound();
+
+            var order = await _context.Orders.FindAsync(id);
+            if (order == null) 
+                return NotFound();
 
             return View(order);
         }
 
-        
-            private double GetDensityByGrade(string grade)
-            {
-                return grade switch
-                {
-                  "A" => 7.75,
-                  "B" => 8.0,
-                  "C" => 7.0,
-                _ => throw new ArgumentException("Invalid grade")
-                };
-            }
-        
-
-        // Helper Method: Prepare Logic App Request
-        private async Task<HttpResponseMessage> SendToLogicApp(Order order)
+        // POST: Orders/Edit/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(int id, Order order)
         {
-            var jsonContent = JsonConvert.SerializeObject(order);
-            var content = new StringContent(jsonContent, Encoding.UTF8, "application/json");
-            return await _httpClient.PostAsync(LogicAppUrl, content);
+            if (id != order.OrderId) 
+                return NotFound();
+
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    _context.Update(order);
+                    await _context.SaveChangesAsync();
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    if (!OrderExists(order.OrderId)) 
+                        return NotFound();
+                    throw;
+                }
+                return RedirectToAction(nameof(Index));
+            }
+            return View(order);
+        }
+
+        // GET: Orders/Delete/5
+        public async Task<IActionResult> Delete(int? id)
+        {
+            if (id == null) 
+                return NotFound();
+
+            var order = await _context.Orders.FindAsync(id);
+            if (order == null) 
+                return NotFound();
+
+            return View(order);
+        }
+
+        // POST: Orders/Delete/5
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteConfirmed(int id)
+        {
+            var order = await _context.Orders.FindAsync(id);
+            if (order != null)
+            {
+                _context.Orders.Remove(order);
+                await _context.SaveChangesAsync();
+            }
+            return RedirectToAction(nameof(Index));
+        }
+
+        // Helper Method: Check if Order Exists
+        private bool OrderExists(int id)
+        {
+            return _context.Orders.Any(e => e.OrderId == id);
         }
     }
 }
