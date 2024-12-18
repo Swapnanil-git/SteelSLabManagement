@@ -4,7 +4,6 @@ using SteelSlabManagement.Data;
 using SteelSlabManagement.Models;
 using System.Threading.Tasks;
 using System.Linq;
-
 namespace SteelSlabManagement.Controllers
 {
     public class OrdersController : Controller

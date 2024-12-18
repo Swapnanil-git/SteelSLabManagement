@@ -16,7 +16,13 @@ namespace SteelSlabManagement.Controllers
 
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Inventory.ToListAsync());
+            var InventoryItems = (await _context.Inventory.ToListAsync());
+            if (InventoryItems == null)
+           {
+           // Handle the case where no inventory item is found
+              return NotFound();
+           }
+            return View("Details",InventoryItems);
         }
 
         public IActionResult Create()
