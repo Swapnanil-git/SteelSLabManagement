@@ -48,6 +48,23 @@ namespace SteelSlabManagement.Controllers
         {
             if (ModelState.IsValid)
             {
+                double density = 0;
+                switch(order.Grade)
+                {
+                    case "A":
+                      density = 7.7;
+                      break;
+                    case "B":
+                      density = 7.0;
+                      break;
+                    case "C":
+                      density = 6.5;
+                      break;
+                    default:
+                      ModelState.AddModelError("Grade", "Invalid grade");
+                      return View(order);
+                }
+                order.Weight = density * order.Length * order.Width * order.Quantity;
                 _context.Add(order);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
